@@ -1,30 +1,50 @@
 import { Request, Response } from 'express';
 
+import log from './../logger';
+
 import { IUser, LoginPayload, ICommonResponse } from '../interfaces';
 
-const createUser = (req: Request, res: Response<ICommonResponse | IUser>): Response<ICommonResponse | IUser> => {
+import { UserModel } from './../models/user.model';
+
+const createUser = async (req: Request, res: Response<Omit<IUser, 'password'> | ICommonResponse>):Promise<Response<Omit<IUser, 'password'> | ICommonResponse>> => {
 
 
-    const { email, name, password } = req.body as IUser;
+    const userBody = req.body as IUser;
 
-    if (name.length < 5) {
+    try {
+
+        let user = await UserModel.findOne({ email: userBody.email });
+
+        if (user){
+            return res.status(400).json(
+                {
+                    ok: false,
+                    msg: 'The email has been taken from another user',
+                }
+            );
+        }
+
+        user = new UserModel(userBody);
+
+        await user.save();
+
+
         return res.json(
             {
+                id: user.id as string,
+                name: user.name,
+                email: user.email,
+            }
+        );
+    } catch (error) {
+        log.error('Error on create user', error);
+        return res.status(500).json(
+            {
                 ok: false,
-                msg: 'El nombre debe ser de 5 letras',
+                msg: 'Server error',
             }
         );
     }
-
-    return res.json(
-        {
-            ok: true,
-            msg: 'registro',
-            email,
-            name,
-            password,
-        }
-    );
 };
 
 
