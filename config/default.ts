@@ -1,7 +1,7 @@
 export default {
     port: 1337,
     host: 'localhost',
-    dbUri: 'mongodb://localhost:27017/rest-api',
+    dbUri: 'mongodb://user:12345678@localhost:30503/test?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false',
     saltWorkFactor: 10,
     accessTokenTtl: '15m',
     refreshTokenTtl: '1y',

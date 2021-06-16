@@ -3,6 +3,7 @@ import config from 'config';
 
 import log from './logger';
 import routes from './routes';
+import { dbConnection } from './database/config';
 // import { deserializeUser } from "./middleware";
 
 
@@ -26,5 +27,5 @@ app.listen(port, () => {
 
 routes(app);
 
-
+dbConnection();
 

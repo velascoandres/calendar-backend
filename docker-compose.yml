@@ -1,0 +1,22 @@
+version: '2.2'
+services:
+  mongo_db:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'user'
+      MONGO_INITDB_ROOT_PASSWORD: '12345678'
+      MONGO_INITDB_DATABASE: 'test'
+      MONGODB_ROOT_PASSWORD: '12345678'
+    ports:
+      - '30503:27017'
+    expose:
+      - '27017'
+    volumes:
+      - mongo-db-volume:/data/db
+      - mongo-config-volume:/data/configdb
+# Names our volume
+volumes:
+  mongo-config-volume:
+  mongo-db-volume:
