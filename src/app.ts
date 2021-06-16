@@ -2,6 +2,7 @@ import express from 'express';
 import config from 'config';
 
 import log from './logger';
+import routes from './routes';
 // import { deserializeUser } from "./middleware";
 
 
@@ -14,11 +15,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
-app.get('/', (req, res) => {
-    res.send('Well done!');
-});
+// Directorio publico
+
+app.use('/', express.static(__dirname + './../public'));
 
 
 app.listen(port, () => {
     log.info(`Server listing at http://${host}:${port}`);
 });
+
+routes(app);
+
+
+
