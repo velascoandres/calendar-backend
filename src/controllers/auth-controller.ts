@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
+import config from 'config';
 
 import log from './../logger';
-
 import { IUser, LoginPayload, ICommonResponse } from '../interfaces';
-
 import { UserModel } from './../models/user.model';
 
-const createUser = async (req: Request, res: Response<Omit<IUser, 'password'> | ICommonResponse>):Promise<Response<Omit<IUser, 'password'> | ICommonResponse>> => {
+import { genSaltSync, hashSync } from 'bcryptjs';
+
+type CreateUserResponse = Response<Omit<IUser, 'password'> | ICommonResponse>;
+
+
+const createUser = async (req: Request, res: CreateUserResponse): Promise<CreateUserResponse> => {
 
 
     const userBody = req.body as IUser;
@@ -15,7 +19,7 @@ const createUser = async (req: Request, res: Response<Omit<IUser, 'password'> | 
 
         let user = await UserModel.findOne({ email: userBody.email });
 
-        if (user){
+        if (user) {
             return res.status(400).json(
                 {
                     ok: false,
@@ -25,6 +29,10 @@ const createUser = async (req: Request, res: Response<Omit<IUser, 'password'> | 
         }
 
         user = new UserModel(userBody);
+
+        // Encrypt password
+        const salt = genSaltSync(config.get('saltWorkFactor'));
+        user.password = hashSync(user.password, salt);
 
         await user.save();
 
