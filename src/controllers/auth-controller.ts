@@ -3,16 +3,22 @@ import config from 'config';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 
 import log from './../logger';
-import { IUser, LoginPayload, ICommonResponse, RequestWithUser, UserPayload } from '../interfaces';
+import {
+    IUser,
+    LoginPayload,
+    RequestWithUser,
+    UserPayload,
+    CreateResponse,
+    UserToken,
+} from '../interfaces';
 import { UserModel } from './../models/user.model';
 import { generateJWT } from './../helpers/jwt';
 
 
-type CreateUserResponse = Response<(Omit<IUser, 'password'> & { token: string }) | ICommonResponse>;
-type LoginResponse = CreateUserResponse;
+type LoginResponse = CreateResponse<UserToken>;
 
 
-const createUser = async (req: Request, res: CreateUserResponse): Promise<CreateUserResponse> => {
+const createUser = async (req: Request, res: CreateResponse<UserToken>): Promise<CreateResponse<UserToken>> => {
 
 
     const userBody = req.body as IUser;
@@ -121,6 +127,7 @@ const login = async (req: Request, res: LoginResponse): Promise<LoginResponse> =
 
         return res.json(
             {
+                id: user.id,
                 name: user.name,
                 email,
                 token,

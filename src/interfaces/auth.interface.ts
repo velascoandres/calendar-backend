@@ -10,5 +10,12 @@ export interface IUser {
 
 
 export type LoginPayload = Pick<IUser, 'email' | 'password'>;
+
+
 export type RequestWithUser = Request & { user?: UserPayload };
+
+
 export type UserPayload = { uid: string; name: string; };
+
+
+export type UserToken = Omit<IUser, 'password'> & { token: string };
