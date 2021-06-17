@@ -5,5 +5,6 @@ export default {
     saltWorkFactor: 10,
     accessTokenTtl: '15m',
     refreshTokenTtl: '1y',
+    jwtSeed: 'seed@@@$$4secretseedjwt231SSD',
     privateKey: '',
 };

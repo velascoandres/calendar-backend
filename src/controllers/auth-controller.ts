@@ -1,13 +1,15 @@
 import { Request, Response } from 'express';
 import config from 'config';
+import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 
 import log from './../logger';
-import { IUser, LoginPayload, ICommonResponse } from '../interfaces';
+import { IUser, LoginPayload, ICommonResponse, RequestWithUser, UserPayload } from '../interfaces';
 import { UserModel } from './../models/user.model';
+import { generateJWT } from './../helpers/jwt';
 
-import { genSaltSync, hashSync } from 'bcryptjs';
 
-type CreateUserResponse = Response<Omit<IUser, 'password'> | ICommonResponse>;
+type CreateUserResponse = Response<(Omit<IUser, 'password'> & { token: string }) | ICommonResponse>;
+type LoginResponse = CreateUserResponse;
 
 
 const createUser = async (req: Request, res: CreateUserResponse): Promise<CreateUserResponse> => {
@@ -36,12 +38,16 @@ const createUser = async (req: Request, res: CreateUserResponse): Promise<Create
 
         await user.save();
 
+        // Generate JWT
+        const token = await generateJWT(user.id, user.name);
+
 
         return res.json(
             {
                 id: user.id as string,
                 name: user.name,
                 email: user.email,
+                token,
             }
         );
     } catch (error) {
@@ -56,25 +62,83 @@ const createUser = async (req: Request, res: CreateUserResponse): Promise<Create
 };
 
 
-const renewToken = (req: Request, res: Response<{ ok: boolean, msg: string }>): void => {
-    res.json({ ok: true, msg: 'renewToken' });
+const renewToken = async (req: RequestWithUser, res: Response<{ ok: boolean, msg: string, token?: string }>): Promise<void> => {
+
+    const { uid, name } = req.user as UserPayload;
+
+    try {
+        // JWT
+        const token = await generateJWT(uid, name);
+        res.json({ ok: true, msg: 'renewToken', token });
+
+    } catch (error) {
+        res.status(404).json({ ok: false, msg: 'Error on regenerate token' });
+    }
+
+
+
 };
 
 
-const login = (req: Request, res: Response<ICommonResponse | LoginPayload>): Response<ICommonResponse | LoginPayload> => {
+
+const login = async (req: Request, res: LoginResponse): Promise<LoginResponse> => {
 
 
     const { email, password } = req.body as LoginPayload;
 
+    try {
 
-    return res.json(
-        {
-            ok: true,
-            msg: 'login',
-            email,
-            password,
+        const user = await UserModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json(
+                {
+                    ok: false,
+                    msg: 'The user does not exist'
+                }
+            );
         }
-    );
+
+        // Confirm the passwords
+
+        const isValidPassword = compareSync(password, user.password);
+
+        if (!isValidPassword) {
+
+            return res.status(400).json(
+                {
+                    ok: false,
+                    msg: 'Invalid credentials',
+                }
+            );
+
+        }
+
+
+        // Generate JWT
+        const token = await generateJWT(user.id, user.name);
+
+
+        return res.json(
+            {
+                name: user.name,
+                email,
+                token,
+            }
+        );
+
+    } catch (error) {
+
+        log.error('Error on Login', error);
+
+        return res.status(500).json(
+            {
+                ok: false,
+                msg: 'Server Error',
+            }
+        );
+    }
+
 };
 
 export {

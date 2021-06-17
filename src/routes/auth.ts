@@ -2,6 +2,7 @@ import { createUser, login, renewToken } from '../controllers/auth-controller';
 import { Router } from 'express';
 import { check } from 'express-validator';
 import { validateBody } from '../middlewares/validate-body';
+import { validateJWT } from '../middlewares/validate-jwt';
 
 
 const authRouter = Router();
@@ -32,7 +33,13 @@ authRouter.post(
     createUser,
 );
 
-authRouter.get('/renew', renewToken);
+authRouter.get(
+    '/renew', 
+    [
+        validateJWT,
+    ],
+    renewToken,
+);
 
 
 
