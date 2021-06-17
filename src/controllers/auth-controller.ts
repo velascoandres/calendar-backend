@@ -50,7 +50,7 @@ const createUser = async (req: Request, res: CreateResponse<UserToken>): Promise
 
         return res.json(
             {
-                id: user.id as string,
+                uid: user.id as string,
                 name: user.name,
                 email: user.email,
                 token,
@@ -127,7 +127,7 @@ const login = async (req: Request, res: LoginResponse): Promise<LoginResponse> =
 
         return res.json(
             {
-                id: user.id,
+                uid: user.id,
                 name: user.name,
                 email,
                 token,
