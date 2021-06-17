@@ -12,10 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.10",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/pino": "^6.3.8",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.6",
+    "cors": "^2.8.5",
     "dayjs": "^1.10.5",
     "express": "^4.17.1",
     "express-validator": "^6.12.0",
