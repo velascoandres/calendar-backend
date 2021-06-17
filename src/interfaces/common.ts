@@ -11,7 +11,7 @@ export interface ICommonResponse {
 
 export type CreateResponse<T> = Response<T | ICommonResponse>;
 
-export type ListResponse<T> = Response<{data: T[], total: number} | ICommonResponse>;
+export type ListResponse<T> = Response<{data: T[]} | ICommonResponse>;
 
 export type UpdateResponse<T> = CreateResponse<T>;
 

@@ -32,7 +32,13 @@ eventRouter.post(
 
 eventRouter.put(
     '/:id',
-    [],
+    [
+        check('title', 'Title is required').notEmpty(),
+        check('start', 'Start is required').notEmpty(),
+        check('start', 'Start must be a valid date').custom(isDate),
+        check('end', 'End is required').notEmpty(),
+        check('end', 'End must be a valid date').custom(isDate),
+    ],
     updateEvent,
 );
 
