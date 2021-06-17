@@ -1,5 +1,3 @@
-import { Request } from 'express';
-
 import { UpdateResponse } from './../interfaces/common';
 import log from '../logger';
 import {
