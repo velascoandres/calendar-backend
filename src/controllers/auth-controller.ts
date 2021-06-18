@@ -68,14 +68,14 @@ const createUser = async (req: Request, res: CreateResponse<UserToken>): Promise
 };
 
 
-const renewToken = async (req: RequestWithUser, res: Response<{ ok: boolean, msg: string, token?: string }>): Promise<void> => {
+const renewToken = async (req: RequestWithUser, res: LoginResponse): Promise<void> => {
 
     const { uid, name } = req.user as UserPayload;
 
     try {
         // JWT
         const token = await generateJWT(uid, name);
-        res.json({ ok: true, msg: 'renewToken', token });
+        res.json({ ok: true, msg: 'renewToken', token, uid, name });
 
     } catch (error) {
         res.status(404).json({ ok: false, msg: 'Error on regenerate token' });
