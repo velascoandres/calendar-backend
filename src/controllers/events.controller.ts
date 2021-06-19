@@ -43,7 +43,7 @@ const createEvent = async (req: RequestWithUser, res: CreateResponse<IEvent>): P
 const getEvents = async (req: RequestWithUser, res: ListResponse<IEvent>): Promise<void> => {
     try {
         const events = await EventModel.find().populate('user', 'name');
-        res.status(500).json(
+        res.json(
             {
                 data: events,
             }
